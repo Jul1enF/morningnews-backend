@@ -7,7 +7,13 @@ const { checkBody } = require('../modules/checkBody');
 const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 
-router.post('/signup', (req, res) => {
+const mongoose = require('mongoose');
+
+const connectionString = process.env.CONNECTION_STRING;
+
+router.post('/signup', async (req, res) => {
+await mongoose.connect(connectionString, { connectTimeoutMS: 2000 })
+
   if (!checkBody(req.body, ['username', 'password'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
@@ -35,7 +41,9 @@ router.post('/signup', (req, res) => {
   });
 });
 
-router.post('/signin', (req, res) => {
+router.post('/signin', async (req, res) => {
+  await mongoose.connect(connectionString, { connectTimeoutMS: 2000 })
+
   if (!checkBody(req.body, ['username', 'password'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
@@ -50,7 +58,9 @@ router.post('/signin', (req, res) => {
   });
 });
 
-router.get('/canBookmark/:token', (req, res) => {
+router.get('/canBookmark/:token', async (req, res) => {
+  mongoose.connect(connectionString, { connectTimeoutMS: 2000 })
+
   User.findOne({ token: req.params.token }).then(data => {
     if (data) {
       res.json({ result: true, canBookmark: data.canBookmark });
